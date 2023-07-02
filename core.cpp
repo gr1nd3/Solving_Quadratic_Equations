@@ -1,4 +1,12 @@
 
+#include <stdio.h>
+#include <math.h>
+
+//-----------------------------------------------------------------------------
+
+/*const float Nan = 1e6;
+const float Meloch = 1e-6;
+const int Pizda = -10; */
 
 //-----------------------------------------------------------------------------
 
@@ -7,13 +15,15 @@ float fix_zero_ret (float x);
 float scanf_or_pnahui (const char text[ ]);
 void eat_symbols ( );
 int quadratic_equation (float a, float b, float c, float* x_1, float* x_2);
-bool cmp_zero (float d);
+int linear_equation (float b, float c, float* x_1);
+bool is_zero (float d);
+int cmp_string (char word_1[], char word_2[]);
 
 //-----------------------------------------------------------------------------
 
 float fix_zero_ret (float x)
 {
-    if (cmp_zero (x))
+    if (is_zero (x))
     {
         return 0;
     }
@@ -28,7 +38,7 @@ float fix_zero_ret (float x)
 
 void fix_zero (float* x)
 {
-    if (cmp_zero (*x))
+    if (is_zero (*x))
     {
         *x = 0;
     }
@@ -43,6 +53,10 @@ float scanf_or_pnahui (const char text[ ])
 
     while (scanf ("%f", &a) != 1)
     {
+        char word [20] = "";
+        scanf  ("%s", word);
+        if (cmp_string (word, "END") == 0) return Nan;
+
         eat_symbols ( );
 
         printf ("ИДИ НАХУЙ педик" "\n");
@@ -62,7 +76,7 @@ void eat_symbols ( )
 
 //-----------------------------------------------------------------------------
 
-bool cmp_zero (float d)
+bool is_zero (float d)
 {
     return (-Meloch < d && d < +Meloch);
 }
@@ -71,6 +85,8 @@ bool cmp_zero (float d)
 
 int quadratic_equation (float a, float b, float c, float* x_1, float* x_2)
 {
+    if (is_zero (a)) return linear_equation (b, c, x_1);
+
     float d = b * b - 4 * a * c;
 
     if (d > 0)
@@ -80,7 +96,7 @@ int quadratic_equation (float a, float b, float c, float* x_1, float* x_2)
         return 2;
     }
 
-    else if (cmp_zero (d))
+    else if (is_zero (d))
     {
         *x_1 = -b / (2 * a);
         return 1;
@@ -93,13 +109,56 @@ int quadratic_equation (float a, float b, float c, float* x_1, float* x_2)
 }
 
 //-----------------------------------------------------------------------------
+
+int linear_equation (float b, float c, float* x_1)
+{
+
+    if (is_zero (b) && is_zero (c))  return -1;
+
+    if (is_zero (b) && !is_zero (c)) return 0;
+
+    if (!is_zero (b) && !is_zero (c))
+    {
+        *x_1 = -c / b;
+        return 1;
+    }
+
+    return Pizda;
+}
+//-----------------------------------------------------------------------------
 /*
 
-bool cmp_zero (float d)
+bool is_zero (float d)
 {
     if (-Meloch < d && d < +Meloch) return true;
     else                            return false;
 }
 
 */
+//-----------------------------------------------------------------------------
+/*int main()
+{
+    printf ("1: %d, should be 0\n", cmp_string ("END", "END"));
+    printf ("2: %d, should be 1\n", cmp_string ("END", "ENDOK"));
+    printf ("3: %d, should be 0\n", cmp_string ("", ""));
+    printf ("4: %d, should be 1\n", cmp_string ("", "END"));
+    printf ("5: %d, should be 1\n", cmp_string ("END", ""));
+    printf ("6: %d, should be 0\n", cmp_string ("k", "k"));
+    printf ("7: %d, should be 1\n", cmp_string ("k", "l"));
+}*/
+
+//-----------------------------------------------------------------------------
+
+int cmp_string (char word_1[], char word_2[])
+{
+    int i = 0;
+    while (word_1[i] != 0 || word_2[i] != 0)
+    {
+        if (word_1[i] != word_2[i]) return 1;
+        i++;
+    }
+
+    return 0;
+}
+
 //-----------------------------------------------------------------------------
